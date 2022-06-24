@@ -1,0 +1,8 @@
+.DS_Store
+*.cmake
+CMakeCache.txt
+Makefile
+.vscode/
+bin/
+build/
+CMakeFiles/
