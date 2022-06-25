@@ -85,6 +85,8 @@ void SceneParser::parseFile() {
     while (getToken(token)) {
         if (!strcmp(token, "PerspectiveCamera")) {
             parsePerspectiveCamera();
+        } else if (!strcmp(token, "OrthographicCamera")) { // 正交相机
+            parseOrthographicCamera();
         } else if (!strcmp(token, "Background")) {
             parseBackground();
         } else if (!strcmp(token, "Lights")) {
@@ -130,6 +132,26 @@ void SceneParser::parsePerspectiveCamera() {
     getToken(token);
     assert (!strcmp(token, "}"));
     camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians);
+}
+
+void SceneParser::parseOrthographicCamera() {
+    char token[MAX_PARSER_TOKEN_LENGTH];
+    // read in the camera parameters
+    getToken(token); assert (!strcmp(token, "{"));
+    getToken(token); assert (!strcmp(token, "center"));
+    Vector3f center = readVector3f();
+    getToken(token); assert (!strcmp(token, "direction"));
+    Vector3f direction = readVector3f();
+    getToken(token); assert (!strcmp(token, "up"));
+    Vector3f up = readVector3f();
+    getToken(token); assert (!strcmp(token, "size"));
+    float size = readFloat();
+    getToken(token); assert (!strcmp(token, "width"));
+    int width = readInt();
+    getToken(token); assert (!strcmp(token, "height"));
+    int height = readInt();
+    getToken(token); assert (!strcmp(token, "}"));
+    camera = new OrthographicCamera(center, direction, up, width, height, size);
 }
 
 void SceneParser::parseBackground() {

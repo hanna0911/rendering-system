@@ -2,6 +2,8 @@
 #define MATRIX4F_H
 
 #include <cstdio>
+#include "Vector4f.h"
+#include "Vector3f.h"
 
 class Matrix2f;
 class Matrix3f;
@@ -92,6 +94,34 @@ public:
 	// returns an orthogonal matrix that's a uniformly distributed rotation
 	// given u[i] is a uniformly distributed random number in [0,1]
 	static Matrix4f randomRotation( float u0, float u1, float u2 );
+
+	// Use to transform a point with a matrix
+	// that may include translation
+	void Transform(Vector4f &v) const {
+		Vector4f answer;
+		for (int y = 0; y < 4; y++) {
+			answer[y] = 0;
+			for (int i = 0; i < 4; i++) {
+				answer[y] += m_elements[y * 4 + i] * v[i];
+			}
+		}
+		v = answer;
+	}
+
+	void Transform(Vector3f &v) const {
+		Vector4f v2 = Vector4f(v.x(), v.y(), v.z(), 1);
+		Transform(v2);
+		v = Vector3f(v2.x(), v2.y(), v2.z()); 
+	}
+
+	// Use to transform the direction of the ray
+  	// (ignores any translation)
+	void TransformDirection(Vector3f &v) const {
+		Vector4f v2 = Vector4f(v.x(), v.y(), v.z(), 0);
+		Transform(v2);
+		v = Vector3f(v2.x(), v2.y(), v2.z()); 
+	}
+
 
 private:
 
