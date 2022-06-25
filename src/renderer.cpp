@@ -209,10 +209,12 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
                 I += ILight;
             }
             */
+           //testcomment
+           
             if(_scene.getGroup()->intersect(shadowRay, shadowHit, eps)) {
                 
                 float getT = shadowHit.getT(); // bug...
-                // if (getT < distToLight) continue;
+                if (getT < distToLight) continue;
 
                 // std::cout << "useTransparentShadows" << std::endl;
                 // useTransparentShadows
@@ -232,6 +234,7 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
                 } while (_scene.getGroup()->intersect(shadowRay, shadowHit, getT + eps));
 
             }
+             //testcommentend
             I += h.getMaterial()->Shade(r, h, tolight, intensity) * mask;
 
             /*

@@ -43,3 +43,8 @@ bin/PA1 testcases/scene13_reflective_sphere.txt output/scene13_rc.bmp rc
 bin/PA1 testcases/scene13_reflective_sphere.txt output/scene13_rt.bmp rt 4
 bin/PA1 testcases/scene14_transparent_bars.txt output/scene14_rc.bmp rc
 bin/PA1 testcases/scene14_transparent_bars.txt output/scene14_rt.bmp rt 4
+
+bin/PA1 testcases/demo/scene01_cornellbox.txt output/demo/scene01_rc.bmp rc
+bin/PA1 testcases/demo/scene01_cornellbox.txt output/demo/scene01_rt.bmp rt 5
+bin/PA1 testcases/demo/scene02_new.txt output/demo/scene02_rc.bmp rc 
+bin/PA1 testcases/demo/scene02_new.txt output/demo/scene02_rt.bmp rt 5

@@ -278,7 +278,7 @@ Material *SceneParser::parseMaterial() {
     assert (!strcmp(token, "{"));
     while (true) {
         getToken(token);
-        if (strcmp(token, "diffuseColor") == 0) {
+        if (strcmp(token, "diffuseColor") == 0 || !strcmp(token, "color")) {
             diffuseColor = readVector3f();
         } else if (strcmp(token, "specularColor") == 0) {
             specularColor = readVector3f();
@@ -288,7 +288,7 @@ Material *SceneParser::parseMaterial() {
             reflectiveColor = readVector3f();
         } else if (!strcmp(token, "transparentColor")) {
             transparentColor = readVector3f();
-        } else if (!strcmp(token, "indexOfRefraction")) {
+        } else if (!strcmp(token, "indexOfRefraction") || !strcmp(token, "refractionIndex")) {
             indexOfRefraction = readFloat();
         } else if (strcmp(token, "texture") == 0) {
             // Optional: read in texture and draw it.
