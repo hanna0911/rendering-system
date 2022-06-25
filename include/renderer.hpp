@@ -12,11 +12,11 @@
 // class Ray;
 
 class Renderer {
-  public:
+public:
     // Instantiates a renderer for the given scene.
     Renderer(char *input_file, char *output_file) :
-      _scene(input_file), 
-      output_file(output_file) {}
+        _scene(input_file), 
+        output_file(output_file) {}
     
     virtual void Render() = 0;
   
@@ -26,20 +26,22 @@ class Renderer {
 };
 
 class RayCaster : public Renderer {
-  public:
+public:
     RayCaster(char *input_file, char *output_file) : 
-      Renderer(input_file, output_file) {}
+        Renderer(input_file, output_file) {}
     void Render();
 };
 
 class RayTracer : public Renderer {
-  public:
-    RayTracer(char *input_file, char *output_file, int bounces) : 
-      Renderer(input_file, output_file), 
-      _bounces(bounces) {}
+public:
+    RayTracer(char *input_file, char *output_file, int bounces, bool transShad, bool antiAlias) : 
+        Renderer(input_file, output_file), 
+        _bounces(bounces),
+        useTransparentShadows(transShad),
+        anti_aliasing(antiAlias) {}
     void Render();
 
-  private:
+private:
     Vector3f traceRay(const Ray &ray, float tmin, int bounces, float weight, float indexOfRefraction, Hit &hit) const;
     Vector3f traceRay(const Ray &ray, int depth) const;
     
@@ -49,6 +51,8 @@ class RayTracer : public Renderer {
     bool lightIntersect(const Ray& r, Hit& h, double tmin) const;
     // rendering options
     int _bounces;
+    bool useTransparentShadows;
+    bool anti_aliasing;
 };
 
 #endif // RENDERER_H

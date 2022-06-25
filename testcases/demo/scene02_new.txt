@@ -3,8 +3,8 @@ PerspectiveCamera {
     direction 0 0 -1
     up 0 1 0
     angle 30
-    width 500
-    height 500
+    width 1600
+    height 1600
 }
 
 Lights {
@@ -34,9 +34,9 @@ Materials {
     numMaterials 8
     PhongMaterial {
         diffuseColor 0.1 0.1 0.1
-        specularColor 0.8 0.8 0.8 
-        shininess 20
-        transparentColor 0.6 0.6 0.6
+        specularColor 1 1 1 
+        shininess 100
+        transparentColor 0.7 0.7 0.7
         reflectiveColor 0.3 0.3 0.3
         indexOfRefraction 1.1
     }

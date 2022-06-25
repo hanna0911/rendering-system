@@ -36,11 +36,13 @@ int main(int argc, char *argv[]) {
     // pixel in your output image.
 
     if(!strcmp(argv[3], "rc")){
+        // input_file, output_file
         RayCaster rc(argv[1], argv[2]);
         rc.Render();
     }
     else if(!strcmp(argv[3], "rt")){
-        RayTracer rt(argv[1], argv[2], atoi(argv[4]));
+        // input_file, output_file, bounces, transparent_shadowing, anti-aliasing
+        RayTracer rt(argv[1], argv[2], atoi(argv[4]), bool(atoi(argv[5])), bool(atoi(argv[6])));
         rt.Render();
     }
 

@@ -22,12 +22,21 @@ Background {
 }
 
 Materials {
-    numMaterials 1
+    numMaterials 2
     Material { 
-	specularColor 0.9 0.9 0.9
-	shininess 30
-	diffuseColor 0.2 0.2 0.3
+        specularColor 0.3 0.3 0.3
+        shininess 10
+        diffuseColor 0.2 0.2 0.3
+        reflectiveColor 0.2 0.2 0.3
+        transparentColor 0.2 0.2 0.3
+        indexOfRefraction 1.05
 	}
+    Material {
+        specularColor 0.9 0.9 0.9
+        shininess 10
+        diffuseColor 0.8 0.8 0.8
+        reflectiveColor 0.5 0.5 0.5
+    }
 }
 
 Group {
@@ -40,9 +49,9 @@ Group {
 			obj_file mesh/bunny_1k.obj
 		}
 	}
-    MaterialIndex 0
+    MaterialIndex 1
       Plane {
-	normal 0 1 0
+	    normal 0 1 0
         offset -2
     }
 }

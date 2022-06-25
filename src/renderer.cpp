@@ -6,6 +6,7 @@
 #include "group.hpp"
 #include "light.hpp"
 #include <limits>
+#include "Vector3f.h"
 
 #define eps 1e-5
 
@@ -59,29 +60,145 @@ void RayTracer::Render() {
     // This look generates camera rays and callse traceRay.
     // It also write to the color, normal, and depth images.
     // You should understand what this code does.
-    time_t start = time(NULL);
+    if(!anti_aliasing){
+        time_t start = time(NULL);
 #pragma omp parallel for schedule(dynamic, 1)
-    for (int y = 0; y < h; ++y) {
-        float elapsed = (time(NULL) - start), progress = (1. + y) / h;
-        fprintf(stderr, "\rRendering %5.2f%% Time: %.2f/%.2f sec", progress * 100., elapsed, elapsed / progress);
-        float ndcy = 2 * (y / (h - 1.0f)) - 1.0f;
-        for (int x = 0; x < w; ++x) {
-            float ndcx = 2 * (x / (w - 1.0f)) - 1.0f;
-            // Use PerspectiveCamera to generate a ray.
-            // You should understand what generateRay() does.
-            Ray r = cam->generateRayFromCamera(Vector2f(ndcx, ndcy));
-            Hit h;
-            // Hit h = Hit(FLT_MAX, NULL, Vector3f(0.0f, 0.0f, 0.0f));
-            // std::cout << x << ", " << y << std::endl;
-            Vector3f color = traceRay(r, cam->getTMin(), 0, 0, 1, h);
-            // Vector3f color = traceRay(r, 0);
-            image.SetPixel(x, y, color);
+        for (int y = 0; y < h; ++y) {
+            float elapsed = (time(NULL) - start), progress = (1. + y) / h;
+            fprintf(stderr, "\rRendering %5.2f%% Time: %.2f/%.2f sec", progress * 100., elapsed, elapsed / progress);
+            float ndcy = 2 * (y / (h - 1.0f)) - 1.0f;
+            for (int x = 0; x < w; ++x) {
+                float ndcx = 2 * (x / (w - 1.0f)) - 1.0f;
+                // Use PerspectiveCamera to generate a ray.
+                // You should understand what generateRay() does.
+                Ray r = cam->generateRayFromCamera(Vector2f(ndcx, ndcy));
+                Hit h;
+                // Hit h = Hit(FLT_MAX, NULL, Vector3f(0.0f, 0.0f, 0.0f));
+                // std::cout << x << ", " << y << std::endl;
+                Vector3f color = traceRay(r, cam->getTMin(), 0, 0, 1, h);
+                // Vector3f color = traceRay(r, 0);
+                image.SetPixel(x, y, color);
+            }
+        }
+        
+    }
+    
+    // anti-aliasing
+    else{ 
+        
+        // Jitter Sampling: High Res
+        int widthHighRes = w * 3;
+        int heightHighRes = h * 3;
+        std::vector<Vector3f> pixColors;
+        std::vector<Vector3f> pixColorsBlurH;
+        std::vector<Vector3f> pixColorsBlurV;
+        const float K[5] = {0.1201f, 0.2339f, 0.2931f, 0.2339f, 0.1201f};
+        
+        time_t start = time(NULL);
+        pixColors.resize(widthHighRes * heightHighRes);
+        for (int i = 0; i < widthHighRes; i++) {
+            float elapsed = (time(NULL) - start), progress = (1. + i) / widthHighRes;
+            fprintf(stderr, "\rRendering %5.2f%% Time: %.2f/%.2f sec", progress * 100., elapsed, elapsed / progress);
+#pragma omp parallel for schedule(dynamic, 1)
+            for (int j = 0; j < heightHighRes; j++) {
+                Vector2f coord = Vector2f((2 * float(i) / (widthHighRes - 1)) - 1, (2 * float(j) / (heightHighRes - 1)) - 1);
+                float r_i = (float)rand() / (float)RAND_MAX - 0.5f;
+                float r_j = (float)rand() / (float)RAND_MAX - 0.5f;
+                Vector2f newCoord = Vector2f(coord[0] + r_i, coord[1] + r_j);
+                Ray r = _scene.getCamera()->generateRayFromCamera(coord);
+                Hit h = Hit(FLT_MAX, NULL, Vector3f(0));
+                Vector3f origColor = traceRay(r, _scene.getCamera()->getTMin(), 0, 0, 1, h);
+                pixColors[i * widthHighRes + j] = origColor;
+            }
+        }
+
+        // Gaussian Filter: High Res horizontal blur
+// #pragma omp parallel for schedule(dynamic, 1)
+        for (int i = 0; i < widthHighRes; i++) {
+            for (int j = 0; j < heightHighRes; j++){
+                if (j == 0) {
+                    pixColorsBlurH.push_back(pixColors[i * heightHighRes] * K[2] + 
+                                             pixColors[i * heightHighRes + 1] * K[3] + 
+                                             pixColors[i * heightHighRes + 2] * K[4]); 
+                } else if (j == 1) {
+                    pixColorsBlurH.push_back(pixColors[i * heightHighRes] * K[1] +
+                                             pixColors[i * heightHighRes + 1] * K[2] + 
+                                             pixColors[i * heightHighRes + 2] * K[3] + 
+                                             pixColors[i * heightHighRes + 3] * K[4]);
+                } else if (j == heightHighRes - 1) {
+                    pixColorsBlurH.push_back(pixColors[i * heightHighRes + j] * K[2] + 
+                                             pixColors[i * heightHighRes + j - 1] * K[1] + 
+                                             pixColors[i * heightHighRes + j - 2] * K[0]);   
+                } else if (j == heightHighRes - 2) {
+                    pixColorsBlurH.push_back(pixColors[i * heightHighRes + j + 1] * K[3] +
+                                             pixColors[i * heightHighRes + j] * K[2] + 
+                                             pixColors[i * heightHighRes + j - 1] * K[1] + 
+                                             pixColors[i * heightHighRes + j - 2] * K[0]);   
+                }
+                else{
+                    pixColorsBlurH.push_back(pixColors[i * heightHighRes + j - 2] * K[0] +
+                                             pixColors[i * heightHighRes + j - 1] * K[1] +
+                                             pixColors[i * heightHighRes + j] * K[2] + 
+                                             pixColors[i * heightHighRes + j + 1] * K[3] + 
+                                             pixColors[i * heightHighRes + j + 2] * K[4]);   
+                }
+            }
+        }
+
+        // Gaussian Filter: High Res vertical blur
+// #pragma omp parallel for schedule(dynamic, 1)
+        for (int j = 0; j < heightHighRes; j++) {
+            for (int i = 0; i < widthHighRes; i++) {
+                if (i == 0) {
+                    pixColorsBlurV.push_back(pixColorsBlurH[j * widthHighRes] * K[2] +
+                                             pixColorsBlurH[j * widthHighRes + 1] * K[3] +
+                                             pixColorsBlurH[j * widthHighRes + 2] * K[4]);
+                }
+                else if (i == 1) {
+                    pixColorsBlurV.push_back(pixColorsBlurH[j * widthHighRes ] * K[1] +
+                                             pixColorsBlurH[j * widthHighRes + 1] * K[2] +
+                                             pixColorsBlurH[j * widthHighRes + 2] * K[3] +
+                                             pixColorsBlurH[j * widthHighRes + 3] * K[4]);
+                } else if (i == widthHighRes - 1) {
+                    pixColorsBlurV.push_back(pixColorsBlurH[j * widthHighRes + i] * K[2] +
+                                             pixColorsBlurH[j * widthHighRes + i - 1] * K[1] +
+                                             pixColorsBlurH[j * widthHighRes + i - 2] * K[0]);
+                } else if (i == widthHighRes - 2) {
+                    pixColorsBlurV.push_back(pixColorsBlurH[j * widthHighRes + i + 1] * K[3] +
+                                             pixColorsBlurH[j * widthHighRes + i] * K[2] +
+                                             pixColorsBlurH[j * widthHighRes + i - 1] * K[1] +
+                                             pixColorsBlurH[j * widthHighRes + i - 2] * K[0]);
+                } else {
+                    pixColorsBlurV.push_back(pixColorsBlurH[j * widthHighRes + i - 2] * K[0] +
+                                             pixColorsBlurH[j * widthHighRes + i - 1] * K[1] +
+                                             pixColorsBlurH[j * widthHighRes + i] * K[2] +
+                                             pixColorsBlurH[j * widthHighRes + i + 1] * K[3] +
+                                             pixColorsBlurH[j * widthHighRes + i + 2] * K[4]);
+                }
+            }
+        }
+
+        // DownSample
+// #pragma omp parallel for schedule(dynamic, 1)
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                Vector3f finalPixCol = pixColorsBlurV[3 * (i + widthHighRes * j) + 0] +
+                                       pixColorsBlurV[3 * (i + widthHighRes * j) + 1] +
+                                       pixColorsBlurV[3 * (i + widthHighRes * j) + 2] +
+                                       pixColorsBlurV[3 * (i + widthHighRes * j) + widthHighRes + 0] +
+                                       pixColorsBlurV[3 * (i + widthHighRes * j) + widthHighRes + 1] +
+                                       pixColorsBlurV[3 * (i + widthHighRes * j) + widthHighRes + 2] +
+                                       pixColorsBlurV[3 * (i + widthHighRes * j) + 2 * widthHighRes + 0] +
+                                       pixColorsBlurV[3 * (i + widthHighRes * j) + 2 * widthHighRes + 1] +
+                                       pixColorsBlurV[3 * (i + widthHighRes * j) + 2 * widthHighRes + 2];
+                Vector3f finalPixColAVG = finalPixCol / 9.0f;
+                image.SetPixel(j, i, finalPixColAVG);
+            }
         }
     }
     // END SOLN
 
-    // save the files
-    // image.savePNG(output_file);
+    // save the file
     image.SaveImage(output_file);
 }
 
@@ -209,32 +326,31 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
                 I += ILight;
             }
             */
-           //testcomment
            
             if(_scene.getGroup()->intersect(shadowRay, shadowHit, eps)) {
                 
                 float getT = shadowHit.getT(); // bug...
-                if (getT < distToLight) continue;
-
-                // std::cout << "useTransparentShadows" << std::endl;
+                
                 // useTransparentShadows
-                float lastT = -1;
-                Vector3f lastColor = Vector3f(-1, -1, -1);
-                do {
-                    getT = shadowHit.getT();
-                    if (lastColor == shadowHit.getMaterial()->getTransparentColor())
-                    {
-                        Vector3f mask_temp = Vector3f(1, 1, 1) * (1 - (getT - lastT)) + shadowHit.getMaterial()->getTransparentColor() * (getT - lastT);
-                        mask = mask * mask_temp;
-                    }
-                    // Hit
-                    shadowHit.initialize();
-                    lastT = getT;
-                    lastColor = shadowHit.getMaterial()->getTransparentColor();
-                } while (_scene.getGroup()->intersect(shadowRay, shadowHit, getT + eps));
+                if(useTransparentShadows) { // huge bug
+                    float lastT = -1;
+                    Vector3f lastColor = Vector3f(-1, -1, -1);
+                    do {
+                        getT = shadowHit.getT();
+                        if (lastColor == shadowHit.getMaterial()->getTransparentColor())
+                        {
+                            Vector3f mask_temp = Vector3f(1, 1, 1) * (1 - (getT - lastT)) + shadowHit.getMaterial()->getTransparentColor() * (getT - lastT);
+                            mask = mask * mask_temp;
+                        }
+                        // Hit
+                        shadowHit.initialize();
+                        lastT = getT;
+                        lastColor = shadowHit.getMaterial()->getTransparentColor();
+                    } while (_scene.getGroup()->intersect(shadowRay, shadowHit, getT + eps));
+                }
+                else if (getT < distToLight) continue;
 
             }
-             //testcommentend
             I += h.getMaterial()->Shade(r, h, tolight, intensity) * mask;
 
             /*
