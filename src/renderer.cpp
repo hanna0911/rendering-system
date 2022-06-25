@@ -211,9 +211,10 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
             */
             if(_scene.getGroup()->intersect(shadowRay, shadowHit, eps)) {
                 
-                float getT = shadowHit.getT();
-                if (getT < distToLight) continue;
+                float getT = shadowHit.getT(); // bug...
+                // if (getT < distToLight) continue;
 
+                // std::cout << "useTransparentShadows" << std::endl;
                 // useTransparentShadows
                 float lastT = -1;
                 Vector3f lastColor = Vector3f(-1, -1, -1);
@@ -229,6 +230,7 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
                     lastT = getT;
                     lastColor = shadowHit.getMaterial()->getTransparentColor();
                 } while (_scene.getGroup()->intersect(shadowRay, shadowHit, getT + eps));
+
             }
             I += h.getMaterial()->Shade(r, h, tolight, intensity) * mask;
 
