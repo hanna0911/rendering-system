@@ -249,7 +249,9 @@ Material *SceneParser::parseMaterial() {
     char filename[MAX_PARSER_TOKEN_LENGTH];
     filename[0] = 0;
     Vector3f diffuseColor(1, 1, 1), specularColor(0, 0, 0);
-    float shininess = 0;
+    float shininess = 1;
+    Vector3f reflectiveColor(0,0,0), transparentColor(0,0,0); // 添加反射、折射材质
+    float indexOfRefraction = 1; // 折射率
     getToken(token);
     assert (!strcmp(token, "{"));
     while (true) {
@@ -258,8 +260,14 @@ Material *SceneParser::parseMaterial() {
             diffuseColor = readVector3f();
         } else if (strcmp(token, "specularColor") == 0) {
             specularColor = readVector3f();
-        } else if (strcmp(token, "shininess") == 0) {
+        } else if (strcmp(token, "shininess") == 0 || !strcmp(token, "exponent")) {
             shininess = readFloat();
+        } else if (!strcmp(token, "reflectiveColor")) {
+            reflectiveColor = readVector3f();
+        } else if (!strcmp(token, "transparentColor")) {
+            transparentColor = readVector3f();
+        } else if (!strcmp(token, "indexOfRefraction")) {
+            indexOfRefraction = readFloat();
         } else if (strcmp(token, "texture") == 0) {
             // Optional: read in texture and draw it.
             getToken(filename);
@@ -268,7 +276,9 @@ Material *SceneParser::parseMaterial() {
             break;
         }
     }
-    auto *answer = new Material(diffuseColor, specularColor, shininess);
+    auto *answer = new Material(diffuseColor, specularColor, shininess,
+				                reflectiveColor,transparentColor,
+				                indexOfRefraction);
     return answer;
 }
 

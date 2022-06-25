@@ -22,7 +22,9 @@
 
 ## 使用框架
 
-PA1所给框架
+- 本课程PA1所给框架
+- MIT[6.837 Intro to Computer Graphics, Fall 2004](http://groups.csail.mit.edu/graphics/classes/6.837/F04/index.html)课程Assignment框架
+- MIT[6.837 Computer Graphics, Fall 2012](https://ocw.mit.edu/courses/6-837-computer-graphics-fall-2012/pages/syllabus/)课程Assignment框架
 
 ```
 .
@@ -60,3 +62,4 @@ PA1所给框架
 
 ## 光线跟踪Ray Tracing
 
+有问题（会停住，无限递归？）

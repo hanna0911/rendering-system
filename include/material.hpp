@@ -13,10 +13,18 @@
 class Material {
 public:
 
-    explicit Material(const Vector3f &d_color, const Vector3f &s_color = Vector3f::ZERO, float s = 0) :
-            diffuseColor(d_color), specularColor(s_color), shininess(s) {
-
-    }
+    explicit Material(const Vector3f &d_color, 
+                      const Vector3f &s_color = Vector3f::ZERO, 
+                      float s = 0,
+                      const Vector3f &r_Color = Vector3f::ZERO, 
+                      const Vector3f &t_Color = Vector3f::ZERO, 
+                      float ior = 1) :
+            diffuseColor(d_color), 
+            specularColor(s_color), 
+            shininess(s),
+            reflectiveColor(r_Color),
+            transparentColor(t_Color),
+            indexOfRefraction(ior) {}
 
     virtual ~Material() = default;
 
@@ -26,6 +34,22 @@ public:
 
     virtual Vector3f getSpecularColor() const {
         return specularColor;
+    }
+
+    virtual Vector3f getReflectiveColor() const {
+        return reflectiveColor;
+    }
+
+    virtual Vector3f getTransparentColor() const {
+        return transparentColor;
+    }
+
+    virtual float getIndexOfRefraction() const {
+        return indexOfRefraction;
+    }
+
+    virtual float getShininess() const {
+        return shininess;
     }
 
     Vector3f Shade(const Ray &ray, const Hit &hit,
@@ -64,9 +88,12 @@ public:
     }
 
 protected:
-    Vector3f diffuseColor;
-    Vector3f specularColor;
-    float shininess;
+    Vector3f diffuseColor; // 漫反射（固有色）
+    Vector3f specularColor; // 高光颜色
+    float shininess; // 镜面反射exponent系数
+    Vector3f reflectiveColor; // 反射度
+    Vector3f transparentColor; // 透明度
+    float indexOfRefraction; // 折射率
 };
 
 

@@ -8,7 +8,8 @@
 // Base class for all 3d entities.
 class Object3D {
 public:
-    Object3D() : material(nullptr) {}
+    // Object3D() : material(nullptr) {}
+    Object3D() {}
 
     virtual ~Object3D() = default;
 

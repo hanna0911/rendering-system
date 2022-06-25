@@ -3,6 +3,7 @@
 
 #include <vecmath.h>
 #include "ray.hpp"
+#include <limits>
 
 class Material;
 
@@ -45,8 +46,11 @@ public:
     void set(float _t, Material *m, const Vector3f &n) {
         t = _t;
         material = m;
+        if(!material) std::cout << "set material failed" << std::endl;
         normal = n;
     }
+
+    void initialize() { t = std::numeric_limits<float>::max(); }
 
 private:
     float t;

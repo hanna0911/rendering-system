@@ -9,10 +9,10 @@
 
 class Sphere : public Object3D {
 public:
-    Sphere() {
-        // unit ball at the center
-        center = Vector3f(0, 0, 0);
-    }
+    // Sphere() {
+    //     // unit ball at the center
+    //     center = Vector3f(0, 0, 0);
+    // }
 
     Sphere(const Vector3f &center, float radius, Material *material) : Object3D(material) {
         // TODO
@@ -24,12 +24,15 @@ public:
 
     bool intersect(const Ray &r, Hit &h, float tmin) override {
         // TODO
+        if(!material) std::cout << "sphere no material" << std::endl;
         Vector3f R0 = r.getOrigin(); // 光线起始点
         Vector3f Rd = r.getDirection(); Rd.normalize(); // 光线单位方向向量
         Vector3f l = center - R0; // 由光源指向球心的向量
         if(l.squaredLength() == radius * radius){
-            if(tmin <= 0 && 0 <= h.getT()) h.set(0, material, (R0 - center).normalized());
-            return true; // 光源位于球面上，算作相交（光源即相交点）
+            if(tmin <= 0 && 0 <= h.getT()){
+                h.set(0, material, (R0 - center).normalized()); // ????
+                return true; // 光源位于球面上，算作相交（光源即相交点）
+            }
         }
         
         float tp = l.dot(l, Rd); // 球心到光线所在直线的投影点 (垂足)

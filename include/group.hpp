@@ -29,7 +29,11 @@ public:
     bool intersect(const Ray &r, Hit &h, float tmin) override {
         bool True = false;
         for(int i = 0; i < capacity; i++){
-            if(data[i]->intersect(r, h, tmin)) True = true;
+            if(data[i]->intersect(r, h, tmin)){
+                True = true;
+                if(!h.getMaterial()) std::cout << "null in group" << std::endl;
+                // break;
+            }
         }
         if(True) return true;
         return false;

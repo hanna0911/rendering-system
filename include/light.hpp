@@ -5,6 +5,8 @@
 #include <limits>
 #include "object3d.hpp"
 
+#define eps 1e-8
+
 class Light {
 public:
     Light() = default;
@@ -12,6 +14,9 @@ public:
     virtual ~Light() = default;
 
     virtual void getIllumination(const Vector3f &p, Vector3f &dir, Vector3f &col, float &distToLight) const = 0; // 增加到光距离distToLight
+    virtual void getIllumination(Object3D* group, const Vector3f &p, const Vector3f &n,
+                                 Vector3f &dir, Vector3f &col) const = 0; // for shading
+    virtual bool intersect(const Ray &r, Hit &h, double tmin) = 0;  // 增加是否与光源相交，如果相交则返回相交的射线r和打到光上的h信息
 };
 
 
@@ -36,6 +41,19 @@ public:
         distToLight = std::numeric_limits<float>::max(); // 非点光源（平行光）：无限远
     }
 
+    // For shading and hashing
+    void getIllumination(Object3D* group, const Vector3f &p, const Vector3f &n, 
+                         Vector3f &dir, Vector3f &col) const override {
+        dir = -direction;
+        Ray light_ray(p + 2 * eps * n, dir);
+		Hit light_hit;
+        bool isIntersect = group->intersect(light_ray, light_hit, eps);
+        col = isIntersect ? Vector3f::ZERO : color;
+    }
+
+    bool intersect(const Ray &r, Hit &h, double tmin) override {
+        return false;
+    }
 private:
 
     Vector3f direction;
@@ -65,7 +83,25 @@ public:
         */
         dir = (position - p).normalized();
         distToLight = (position - p).length();
-        col = color / (pow(distToLight, 2) * falloff); // 避免物理模型过于陡峭
+        col = color / (pow(distToLight, 2) * falloff); // 避免物理模型过于陡峭 分母是否需要+1?
+    }
+
+    // For shading and hashing
+    void getIllumination(Object3D* group, const Vector3f &p, const Vector3f &n, 
+                         Vector3f &dir, Vector3f &col) const override {
+        dir = (position - p).normalized();
+        Ray light_ray(p + 2 * eps * n, dir);
+		Hit light_hit;
+        bool isIntersect = group->intersect(light_ray, light_hit, eps);
+        if (!isIntersect || light_hit.getT() >= (position - p).length())
+            col = color;
+        else{
+            col = Vector3f::ZERO;
+        }
+    }
+
+    bool intersect(const Ray &r, Hit &h, double tmin) override {
+        return false;
     }
 
 private:
