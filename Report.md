@@ -4,7 +4,7 @@
 
 ## 得分点
 
-- [x] 算法选型：
+- [x] 算法选型
   - [x] RT光线跟踪
   - [ ] PT路径追踪
   - [ ] DRT分布式光线跟踪
@@ -14,10 +14,16 @@
 
 - [ ] 参数曲面
 - [ ] 复杂网格（是否有法向插值）
-- [ ] 加速算法
+- [x] 加速算法
+  - [x] AABB包围盒
+  - [x] 层次包围盒
+
 - [ ] 景深
 - [x] 软阴影
 - [x] 抗锯齿
+  - [x] 超采样（抖动采样）
+  - [x] 滤波器（高斯滤波器）
+
 - [ ] 贴图
 - [ ] 凹凸贴图
 - [x] 运动模糊
@@ -56,6 +62,12 @@
 - MIT [6.837 Intro to Computer Graphics, Fall 2004](http://groups.csail.mit.edu/graphics/classes/6.837/F04/index.html) 课程Assignment框架
 - MIT [6.837 Computer Graphics, Fall 2012](https://ocw.mit.edu/courses/6-837-computer-graphics-fall-2012/pages/syllabus/) 课程Assignment框架
 
+## 参考材料
+
+- 本课程授课内容（课堂讲解 + 习题课）
+- 书籍 [_Ray Tracing: The Next Week_](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
+- 
+
 ## 光线跟踪Ray Tracing
 
 ### 基础要求
@@ -84,6 +96,10 @@
 > 下面两幅图依次为Ray Tracing光线跟踪渲染出的**普通球体**（三个球均为Sphere）、**移动球体**（篮球、绿球为MovingSphere）效果：
 
 <img src="Report.assets/scene19_rt_trans_aa.bmp" alt="scene19_rt_trans_aa" style="zoom:20%;" /><img src="/Users/hannawang/Documents/大二-下/图形学/homework/PA1/final_code/Report.assets/scene17_rt_trans_aa.bmp" alt="scene17_rt_trans_aa" style="zoom:20%;" />
+
+### 加速算法
+
+对光线跟踪Ray Tracing使用**BVH层次包围盒（Bounding Volume Hierarchy）**加速，即采用AABB包围盒（Axis-Aligned Bounding Box）作为划分依据建立树形结构对算法进行加速。
 
 ## 路径追踪Path Tracing
 

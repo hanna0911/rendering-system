@@ -11,14 +11,16 @@ class Ray {
 public:
 
     Ray() = delete;
-    Ray(const Vector3f &orig, const Vector3f &dir) {
+    Ray(const Vector3f &orig, const Vector3f &dir, float tm = 0.0f) {
         origin = orig;
         direction = dir;
+        time = tm;
     }
 
     Ray(const Ray &r) {
         origin = r.origin;
         direction = r.direction;
+        time = r.time;
     }
 
     const Vector3f &getOrigin() const {
@@ -33,10 +35,13 @@ public:
         return origin + direction * t;
     }
 
+    float getTime() const { return time; }
+
 private:
 
     Vector3f origin;
     Vector3f direction;
+    float time; // motion blur
 
 };
 

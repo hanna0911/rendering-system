@@ -9,7 +9,7 @@
 
 class Camera {
 public:
-    Camera(const Vector3f &center, const Vector3f &direction, const Vector3f &up, int imgW, int imgH) {
+    Camera(const Vector3f &center, const Vector3f &direction, const Vector3f &up, int imgW, int imgH, float _time0 = 0.0, float _time1 = 0.1) {
         this->center = center;
         this->direction = direction.normalized();
         this->horizontal = Vector3f::cross(this->direction, up).normalized();
@@ -17,6 +17,8 @@ public:
         // this->up = Vector3f::cross(this->horizontal, this->direction);
         this->width = imgW;
         this->height = imgH;
+        this->time0 = _time0;
+        this->time1 = _time1;
     }
 
     // Generate rays for each screen-space coordinate
@@ -37,6 +39,10 @@ protected:
     // Intrinsic parameters
     int width; // 画布大小
     int height;
+
+    // motion blur运动模糊参数
+    float time0;
+    float time1;
 };
 
 // TODO: Implement Perspective camera
@@ -59,15 +65,18 @@ public:
         dRc.normalize();
         Matrix3f R(horizontal, -up, direction, true);
         Vector3f dRw = R * dRc;
-        Ray ray(center, dRw);
-        return ray;
+        // return Ray(center, dRw);
+        // motion blur 
+        return Ray(center, dRw, time0 + (rand() % 100) * (time1 - time0) / 100.0f); 
     }
 
     Ray generateRayFromCamera(const Vector2f &point) override { // Ray Tracing
         float d = 1.0f / (float)std::tan(angle / 2.0f);
         Vector3f newDir = d * direction + point[0] * horizontal + point[1] * up;
         newDir = newDir.normalized();
-        return Ray(center, newDir); 
+        // return Ray(center, newDir); 
+        // motion blur 
+        return Ray(center, newDir, time0 + (rand() % 100) * (time1 - time0) / 100.0f); 
     }
 
     virtual float getTMin() const override { // 获取Tmin

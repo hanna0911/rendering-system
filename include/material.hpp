@@ -87,6 +87,18 @@ public:
         */
     }
 
+
+    // Produce a scattered ray (or say it absorbed the incident ray).
+    // If scattered, say how much the ray should be attenuated.
+    virtual bool scatter(
+            const Ray& r_in, const Hit& rec, Vector3f& attenuation, Ray& scattered
+        ) const {
+        auto scatter_direction = rec.getNormal() + Vector3f(rand(), rand(), rand()).normalized();
+        scattered = Ray(r_in.pointAtParameter(rec.getT()), scatter_direction);
+        attenuation = diffuseColor;
+        return true;
+    }
+
 protected:
     Vector3f diffuseColor; // 漫反射（固有色）
     Vector3f specularColor; // 高光颜色
@@ -95,6 +107,5 @@ protected:
     Vector3f transparentColor; // 透明度
     float indexOfRefraction; // 折射率
 };
-
 
 #endif // MATERIAL_H
