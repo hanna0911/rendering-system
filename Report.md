@@ -20,7 +20,7 @@
 - [x] 抗锯齿
 - [ ] 贴图
 - [ ] 凹凸贴图
-- [ ] 运动模糊
+- [x] 运动模糊
 - [ ] 体积光
 - [ ] 体渲染
 - [ ] 色散
@@ -65,15 +65,25 @@
 > 下面三幅图从左至右依次为**Ray Casting光线投射**、**Ray Tracing光线追踪**、Ray Tracing光线追踪开启**透色阴影**与**软阴影**模式：
 >
 
-<img src="Report.assets/scene14_rc.bmp" alt="scene14_rc" style="zoom:15%;" /><img src="Report.assets/scene14_rt.bmp" alt="scene14_rt" style="zoom:15%;" /><img src="Report.assets/scene14_rt_trans.bmp" alt="scene14_rt_trans" style="zoom:15%;" />
+<img src="Report.assets/scene14_rc.bmp" alt="scene14_rc" style="zoom:13.5%;" /><img src="Report.assets/scene14_rt.bmp" alt="scene14_rt" style="zoom:13.5%;" /><img src="Report.assets/scene14_rt_trans.bmp" alt="scene14_rt_trans" style="zoom:13.5%;" />
 
-### 抗锯齿
+### 抗锯齿Anti-aliasing
 
 对光线追踪Ray Tracing算法增加了**抖动采样Jitter Sampling**、**高斯滤波器Gaussian Filtering**方法进行抗锯齿处理。
 
 > 下面两幅图依次为**没有抗锯齿**处理的Ray Tracing光线追踪、**有抗锯齿**处理的Ray Tracing光线追踪（第一组为300\*300px、第二组为1600\*1600px）：
 
-<img src="Report.assets/scene02_rt_noaa_small.bmp" alt="scene02_rt_noaa_small"/><img src="Report.assets/scene02_rt_aa_small.bmp" alt="scene02_rt_aa_small"/>
+<img src="Report.assets/scene02_rt_noaa_small.bmp" alt="scene02_rt_noaa_small" style="zoom:106%;" /><img src="Report.assets/scene02_rt_aa_small.bmp" alt="scene02_rt_aa_small" style="zoom:106%;" />
+
+<img src="/Users/hannawang/Documents/大二-下/图形学/homework/PA1/final_code/Report.assets/scene02_rt_noaa.bmp" alt="scene02_rt_noaa" style="zoom:20%;" /><img src="/Users/hannawang/Documents/大二-下/图形学/homework/PA1/final_code/Report.assets/scene02_rt_aa.bmp" alt="scene02_rt_aa" style="zoom:20%;" />
+
+### 运动模糊Motion Blur
+
+对光线投射Ray Casting、光线跟踪Ray Tracing中的球体Sphere物体均设置了运动模糊效果（继承自球体Sphere类的**移动球体MovingSphere类**）。
+
+> 下面两幅图依次为Ray Tracing光线跟踪渲染出的**普通球体**（三个球均为Sphere）、**移动球体**（篮球、绿球为MovingSphere）效果：
+
+<img src="Report.assets/scene19_rt_trans_aa.bmp" alt="scene19_rt_trans_aa" style="zoom:20%;" /><img src="/Users/hannawang/Documents/大二-下/图形学/homework/PA1/final_code/Report.assets/scene17_rt_trans_aa.bmp" alt="scene17_rt_trans_aa" style="zoom:20%;" />
 
 ## 路径追踪Path Tracing
 
