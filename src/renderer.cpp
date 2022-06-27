@@ -336,9 +336,9 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
                 // useTransparentShadows
                 // 不会是只有特定物体可以做这个效果吧（和物体挂钩的？如何处理？）
                 // soft shadow my ass
-                if(useTransparentShadows) { // huge bug
+                if(useTransparentShadows) { // huge bug, don't use
 
-                    std::cout << "usetrans???" << std::endl;
+                    // std::cout << "usetrans???" << std::endl;
                     float lastT = -1;
                     Vector3f lastColor = Vector3f(-1, -1, -1);
                     

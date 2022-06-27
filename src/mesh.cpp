@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <utility>
 #include <sstream>
+#include <string>
 
 bool Mesh::intersect(const Ray &r, Hit &h, float tmin) {
 
@@ -24,7 +25,8 @@ bool Mesh::intersect(const Ray &r, Hit &h, float tmin) {
     float t;
     bool boxhit = box.intersect(r, t, tmin);
     // if(boxhit) std::cout << "box intersected" << std::endl;
-    if(!boxhit || t > h.getT()) return false;
+    if(!boxhit) return false;
+    if(t > h.getT()) return false;
 
     /*
     bool result = false;
@@ -69,7 +71,7 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
     bool input_vn = false; // 是否输入vn这一量
 
     while (true) {
-        if(input_vn) std::cout << "input_vn" << std::endl;
+        // if(input_vn) std::cout << "input_vn" << std::endl;
         std::getline(f, line);
         if (f.eof()) {
             break;
@@ -92,6 +94,7 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
             }
             v.push_back(vec);
         } else if (tok == fTok) { // "f" -> t
+            /*
             if (line.find(bslash) != std::string::npos) {
                 std::replace(line.begin(), line.end(), bslash, space);
                 std::stringstream facess(line);
@@ -120,6 +123,20 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
                 t.push_back(trig);
                 if(input_vn) vnIndex.push_back(norm);
             }
+            */
+            // bug: 上面的读取有问题！
+            TriangleIndex vId, nId;
+            for (int i = 0; i < 3; ++i) {
+                std::string str;
+                ss >> str;
+                std::vector<std::string> id = split(str, "/");
+                vId[i] = atoi(id[0].c_str()) - 1;
+                if (id.size() > 2) {
+                    nId[i] = atoi(id[2].c_str()) - 1;
+                }
+            }
+            t.push_back(vId);
+            vnIndex.push_back(nId);
         } else if (tok == texTok) { // "vt" (unused)
             Vector2f texcoord;
             ss >> texcoord[0];
@@ -158,7 +175,10 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
         else triangle->normal = n[triId];
         faces.push_back(triangle);
     }
-    
+
+    // std::cout << vn[vnIndex[0][0]].x() << " " << vn[vnIndex[0][0]].y() << " " << vn[vnIndex[0][0]].z() << std::endl;
+    // std::cout << vn[vnIndex[t.size() - 1][0]].x() << " " << vn[vnIndex[t.size() - 1][0]].y() << " " << vn[vnIndex[t.size() - 1][0]].z() << std::endl;
+
     // build tree
     bvhtree = new bvh_node(faces, 0, faces.size(), 0, 0);
 

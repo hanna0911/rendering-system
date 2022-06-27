@@ -37,6 +37,23 @@ public:
     Vector3f box_minimum, box_maximum;
     bvh_node *bvhtree; // BVH树
 
+    std::vector<std::string> split(std::string str, std::string pattern) {
+        std::string::size_type pos;
+        std::vector<std::string> result;
+        str += pattern;
+        int size = str.size();
+
+        for (int i = 0; i < size; i++) {
+            pos = str.find(pattern, i);
+            if (pos < size) {
+                std::string s = str.substr(i, pos - i);
+                result.push_back(s);
+                i = pos + pattern.size() - 1;
+            }
+        }
+        return result;
+    }
+
 private:
 
     // Normal can be used for light estimation

@@ -103,7 +103,13 @@
 
 ### 加速算法
 
-对光线跟踪Ray Tracing使用**BVH层次包围盒（Bounding Volume Hierarchy）**加速，即采用AABB包围盒（Axis-Aligned Bounding Box）作为划分依据建立树形结构对算法进行加速。
+对Mesh物体使用**BVH层次包围盒（Bounding Volume Hierarchy）**加速，即采用**AABB包围盒**（Axis-Aligned Bounding Box）作为划分依据建立**BVH二叉树**形结构对算法进行加速。
+
+### 复杂网络（法向差值）
+
+实现了Mesh物体的法向差值导入，并正确修改Triangle类的求交算法，渲染出的带法向差值斯坦福兔子如下：
+
+
 
 ## 路径追踪Path Tracing
 

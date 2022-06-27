@@ -16,3 +16,10 @@ bin/PA1 testcases/scene19_sphere_floor.txt output/scene19_rt_trans_aa.bmp rt 4 1
 # bvh
 bin/PA1 testcases/scene20_bunny_1k_testbvh.txt output/scene20_rt_aa.bmp rt 4 0 1
 bin/PA1 testcases/scene20_bunny_1k_testbvh.txt output/scene20_rt_trans_aa.bmp rt 4 1 1
+
+# mesh vn
+bin/PA1 testcases/scene21_bunny_vn.txt output/scene21_rc.bmp rc
+bin/PA1 testcases/scene21_bunny_vn.txt output/scene21_rt.bmp rt 4 0 1
+
+bin/PA1 testcases/scene22_bunny_vn.txt output/scene22_rc.bmp rc
+bin/PA1 testcases/scene22_bunny_vn.txt output/scene22_rt.bmp rt 4 0 1

@@ -35,11 +35,19 @@ public:
 		float det_denominator = denominator.determinant();
 		float t = t_.determinant() / det_denominator, b = b_.determinant() / det_denominator, r = r_.determinant() / det_denominator;
 		t = t / ray.getDirection().length(); // Transform
-		Vector3f n = normal;
-		if (useVN) 
-			n = ((1 - b - r) * vn[0] + b * vn[1] + r * vn[2]).normalized();
+		
 		if (t > 0 && 0 <= b && b <= 1 && 0 <= r && r <= 1 && b + r <= 1 && tmin < t && t < hit.getT()) {
-            hit.set(t, material, n); // 是否要判断normal的朝向？
+			Vector3f n = normal;
+			if (useVN) {
+				Vector3f point = ray.pointAtParameter(t);
+				Vector3f va = (vertices[0] - point), vb = (vertices[1] - point), vc = (vertices[2] - point);
+				float ra = Vector3f::cross(vb, vc).length(),
+					rb = Vector3f::cross(vc, va).length(),
+					rc = Vector3f::cross(va, vb).length();
+				n = (ra * vn[0] + rb * vn[1] + rc * vn[2]).normalized();
+			}
+
+			hit.set(t, material, n); // 是否要判断normal的朝向？
 			// std::cout << "intersect tri" << std::endl;
 			return true;
 		}
@@ -75,6 +83,7 @@ public:
 	void setVN(const Vector3f& an, const Vector3f& bn, const Vector3f& cn) {
 		useVN = true;
 		vn[0] = an; vn[1] = bn; vn[2] = cn;
+		// vn[0] = an.normalized(); vn[1] = bn.normalized(); vn[2] = cn.normalized();
 	}
 
 	Vector3f normal;
