@@ -316,7 +316,8 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
             // rays must be sent to all light sources.
             
             Vector3f mask = Vector3f(1.0, 1.0, 1.0);
-            Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + eps * tolight;
+            // Vector3f shadowRayOrigin = r.pointAtParameter(h.getT()) + eps * tolight;
+            Vector3f shadowRayOrigin = r.pointAtParameter(h.getT());
             Ray shadowRay(shadowRayOrigin, tolight);
             // Hit shadowHit = Hit(distToLight, nullptr, NULL);
             Hit shadowHit;
@@ -330,11 +331,17 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
             if(_scene.getGroup()->intersect(shadowRay, shadowHit, eps)) {
                 
                 float getT = shadowHit.getT(); // bug...
-                
+                if (getT < distToLight) continue; // ?
+
                 // useTransparentShadows
+                // 不会是只有特定物体可以做这个效果吧（和物体挂钩的？如何处理？）
+                // soft shadow my ass
                 if(useTransparentShadows) { // huge bug
+
+                    std::cout << "usetrans???" << std::endl;
                     float lastT = -1;
                     Vector3f lastColor = Vector3f(-1, -1, -1);
+                    
                     do {
                         getT = shadowHit.getT();
                         if (lastColor == shadowHit.getMaterial()->getTransparentColor())
@@ -347,8 +354,9 @@ Vector3f RayTracer::traceRay(const Ray &r, float tmin, int bounces, float weight
                         lastT = getT;
                         lastColor = shadowHit.getMaterial()->getTransparentColor();
                     } while (_scene.getGroup()->intersect(shadowRay, shadowHit, getT + eps));
+                    
                 }
-                else if (getT < distToLight) continue;
+                // else if (getT < distToLight) continue;
 
             }
             I += h.getMaterial()->Shade(r, h, tolight, intensity) * mask;

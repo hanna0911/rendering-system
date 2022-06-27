@@ -12,3 +12,7 @@ bin/PA1 testcases/scene17_moving_sphere_floor.txt output/scene17_rt_trans_aa.bmp
 
 bin/PA1 testcases/scene19_sphere_floor.txt output/scene19_rt_aa.bmp rt 4 0 1
 bin/PA1 testcases/scene19_sphere_floor.txt output/scene19_rt_trans_aa.bmp rt 4 1 1
+
+# bvh
+bin/PA1 testcases/scene20_bunny_1k_testbvh.txt output/scene20_rt_aa.bmp rt 4 0 1
+bin/PA1 testcases/scene20_bunny_1k_testbvh.txt output/scene20_rt_trans_aa.bmp rt 4 1 1

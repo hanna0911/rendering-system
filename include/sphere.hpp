@@ -60,12 +60,14 @@ public:
         else return false;
     }
 
-    bool bounding_box(float time0, float time1, aabb& output_box) const override {
+    /*
+    bool bounding_box(float time0, float time1, aabb& output_box) const {
         output_box = aabb(
             center - Vector3f(radius, radius, radius),
             center + Vector3f(radius, radius, radius));
         return true;
     }
+    */
 
 protected:
     Vector3f center; // 球心
@@ -92,7 +94,6 @@ public:
         // center just needs to become a function center(time)
         
         float time = r.getTime();
-        if(!material) std::cout << "sphere no material" << std::endl;
         Vector3f R0 = r.getOrigin(); // 光线起始点
         Vector3f Rd = r.getDirection(); Rd.normalize(); // 光线单位方向向量
         Vector3f l = center(time) - R0; // 由光源指向球心的向量
@@ -128,6 +129,19 @@ public:
         else return false;
     }
     
+    /*
+    bool bounding_box(float _time0, float _time1, aabb& output_box) const {
+        aabb box0(
+            center(_time0) - Vector3f(radius, radius, radius),
+            center(_time0) + Vector3f(radius, radius, radius));
+        aabb box1(
+            center(_time1) - Vector3f(radius, radius, radius),
+            center(_time1) + Vector3f(radius, radius, radius));
+        output_box = aabb::surrounding_box(box0, box1);
+        return true;
+    }
+    */
+
 protected:
     float time0, time1;
     Vector3f center0, center1;

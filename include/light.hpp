@@ -5,7 +5,7 @@
 #include <limits>
 #include "object3d.hpp"
 
-#define eps 1e-8
+#define eps 1e-5 // 1e-8
 
 class Light {
 public:

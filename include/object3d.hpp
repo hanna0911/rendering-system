@@ -4,7 +4,7 @@
 #include "ray.hpp"
 #include "hit.hpp"
 #include "material.hpp"
-#include "AABB.hpp"
+// #include "aabb.hpp"
 
 // Base class for all 3d entities.
 class Object3D {
@@ -22,9 +22,9 @@ public:
     virtual bool intersect(const Ray &r, Hit &h, float tmin) = 0;
     
     //  compute the bounding boxes of all the hittable objects
-    virtual bool bounding_box(float time0, float time1, aabb& output_box) const = 0;
+    // bool bounding_box(float time0, float time1, aabb& output_box) const;
 
-protected:
+// protected: // temp
 
     Material *material;
 };

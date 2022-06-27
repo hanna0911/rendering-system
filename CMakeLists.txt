@@ -31,6 +31,8 @@ SET(PA1_INCLUDES
         include/triangle.hpp
         include/renderer.hpp
         include/vec_utils.hpp
+        include/aabb.hpp
+        include/bvh.hpp
         )
 
 SET(CMAKE_CXX_COMPILER "/opt/homebrew/bin/g++-11")

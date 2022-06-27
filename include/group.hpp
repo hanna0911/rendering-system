@@ -47,6 +47,24 @@ public:
         return capacity;
     }
 
+    // Creating Bounding Boxes of Lists of Objects
+    /*
+    bool bounding_box(float time0, float time1, aabb& output_box) const {
+        if (data.empty()) return false;
+
+        aabb temp_box;
+        bool first_box = true;
+
+        for (const auto& object : data) {
+            if (!object->bounding_box(time0, time1, temp_box)) return false;
+            output_box = first_box ? temp_box : aabb::surrounding_box(output_box, temp_box);
+            first_box = false;
+        }
+
+        return true;
+    }
+    */
+
 private:
     std::vector<Object3D*> data;
     int capacity;

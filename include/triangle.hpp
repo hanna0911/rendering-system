@@ -1,10 +1,12 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
-#include "object3d.hpp"
 #include <vecmath.h>
 #include <cmath>
 #include <iostream>
+#include "object3d.hpp"
+#include "aabb.hpp"
+
 using namespace std;
 
 // TODO: implement this class and add more fields as necessary,
@@ -18,6 +20,7 @@ public:
 		this->vertices[0] = a; this->vertices[1] = b; this->vertices[2] = c;
 		Vector3f P1P2 = b - a, P1P3 = c - a;
 		this->normal = Vector3f::cross(P1P2, P1P3);
+		useVN = false;
 	}
 
 	bool intersect( const Ray& ray,  Hit& hit , float tmin) override {
@@ -32,14 +35,53 @@ public:
 		float det_denominator = denominator.determinant();
 		float t = t_.determinant() / det_denominator, b = b_.determinant() / det_denominator, r = r_.determinant() / det_denominator;
 		t = t / ray.getDirection().length(); // Transform
-		if(t > 0 && 0 <= b && b <= 1 && 0 <= r && r <= 1 && b + r <= 1 && tmin < t && t < hit.getT()){
-            hit.set(t, material, normal);
+		Vector3f n = normal;
+		if (useVN) 
+			n = ((1 - b - r) * vn[0] + b * vn[1] + r * vn[2]).normalized();
+		if (t > 0 && 0 <= b && b <= 1 && 0 <= r && r <= 1 && b + r <= 1 && tmin < t && t < hit.getT()) {
+            hit.set(t, material, n); // 是否要判断normal的朝向？
+			// std::cout << "intersect tri" << std::endl;
 			return true;
 		}
+		// std::cout << "no intersect tri" << std::endl;
 		return false;
 	}
+	
+	// 何苦给三角形做包围盒呢？怀疑人生ing 不能直接拿三角形作为对象建树吗，还拿AABB过渡一下？？？
+	bool bounding_box(float time0, float time1, aabb& output_box) const {
+        // 计算包围盒的范围
+		Vector3f minimum(std::numeric_limits<float>::max()),
+				 maximum(std::numeric_limits<float>::min());
+		for (int i = 0; i < 3; i++) { // 3 points
+			for (int j = 0; j < 3; j++) { // x, y, z
+				if (vertices[i][j] < minimum[j]) minimum[j] = vertices[i][j];
+				if (vertices[i][j] > maximum[j]) maximum[j] = vertices[i][j];
+			}
+		}
+		// bug: 1. not int, float  2. min, max only have 2 parameters
+		/*
+		int xmin = std::min(vertices[0].x(), vertices[1].x(), vertices[2].x());
+		int xmax = std::max(vertices[0].x(), vertices[1].x(), vertices[2].x());
+		int ymin = std::min(vertices[0].y(), vertices[1].y(), vertices[2].y());
+		int ymax = std::max(vertices[0].y(), vertices[1].y(), vertices[2].y());
+		int zmin = std::min(vertices[0].z(), vertices[1].z(), vertices[2].z());
+		int zmax = std::max(vertices[0].z(), vertices[1].z(), vertices[2].z());
+		output_box = aabb(Vector3f(xmin, ymin, zmin), Vector3f(xmax, ymax, zmax));
+		*/
+        output_box = aabb(minimum, maximum);
+		return true;
+    }
+		
+	void setVN(const Vector3f& an, const Vector3f& bn, const Vector3f& cn) {
+		useVN = true;
+		vn[0] = an; vn[1] = bn; vn[2] = cn;
+	}
+
 	Vector3f normal;
 	Vector3f vertices[3];
+	Vector3f vn[3];
+	bool useVN;
+
 protected:
 };
 

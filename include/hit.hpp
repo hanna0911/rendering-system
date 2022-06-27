@@ -13,7 +13,8 @@ public:
     // constructors
     Hit() {
         material = nullptr;
-        t = 1e38;
+        // t = 1e38;
+        t = std::numeric_limits<float>::max();
     }
 
     Hit(float _t, Material *m, const Vector3f &n) {
